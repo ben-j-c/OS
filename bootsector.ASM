@@ -32,7 +32,7 @@ load_kernel :
 	    call print_string
 
 	    mov bx , KERNEL_OFFSET
-	    mov dh , 63 ;load 47 sectors
+	    mov dh , 127 ;load 2^7 - 1 sectors
 	    mov cl, 0x02; starting from the 2nd sector
 	    mov dl , [ BOOT_DRIVE ]
 	    call disk_load
