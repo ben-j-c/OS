@@ -1,0 +1,5 @@
+fasm/**
+FASMW
+*.o
+*.tmp
+*.BIN
