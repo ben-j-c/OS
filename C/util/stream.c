@@ -20,7 +20,9 @@ void putc(Stream* s, char c)
 
 char peekc(Stream* s)
 {
+	while(s->idxRemove == s->idxAdd);
 	
+	return s->offset[s->idxRemove];
 }
 
 void resetStream(Stream* s)
