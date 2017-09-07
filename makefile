@@ -26,7 +26,7 @@ kernel.BIN: obj/kernel.tmp
 obj/kernel.tmp: obj/kernel.o $(OBJS_DRIVERS) $(OBJS_ASM) $(OBJS_INT) $(OBJS_UTIL)
 	$(LINKER) $(LFLAGS) -o obj/kernel.tmp obj/kernel.o $(OBJS_DRIVERS) $(OBJS_ASM) $(OBJS_INT) $(OBJS_UTIL)
 	
-obj/kernel.o: C/kernel.c $(C_FILES) 
+obj/kernel.o: C/kernel.c $(DRIVER_FILES) $(ASM_FILES) $(INT_FILES) $(UTIL_FILES)
 	$(CC) $(CFLAGS) -o obj/kernel.o C/kernel.c
 
 

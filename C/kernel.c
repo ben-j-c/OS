@@ -7,13 +7,15 @@ char cmd_array[64];
 Stream cmd;
 
 void interruptInit();
-void loop();
-void system();
+static void loop();
+void system(Stream *cmd);
+static void printTime();
 
 void init()
 {	
 	clear();
 	enableCursor();
+	disableHexPrefix();
 	print("init: ");
 	printX32((unsigned int) init);
 	print("\n");
@@ -53,18 +55,35 @@ void loop()
 		}
 		else
 		{
-			putc(&cmd, NULL);
-			system(cmd.offset);
-			resetStream(&cmd);
+			putc(&cmd, '\0');
+			system(&cmd);
 			clearRange(0, 24, 64);
 		}
 	}
 }
 
-void system(char* cmd)
+void system(Stream* cmd)
 {
-	if(!strcmp(cmd, "clear"))
+	char buffer[64];
+	gets(cmd, buffer);
+	
+	
+	if(!strcmp(buffer, "clear"))
 		clear();
-	else if(!strcmp(cmd, "hello"))
+	else if(!strcmp(buffer, "hello"))
 		print("HELLO!\n");
+	else if(!strcmp(buffer, "time"))
+		printTime();
+}
+
+static void printTime()
+{
+	Date d;
+	
+	getDate(&d);
+	
+	printX8(d.hours);
+	print(":");
+	printX8(d.minutes);
+	print("\n");
 }

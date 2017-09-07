@@ -3,6 +3,7 @@
 
 #include "util/stream.h"
 #include "util/string.h"
+#include "util/time.h"
 #include "drivers/IO.h"
 #include "drivers/screen.h"
 #include "drivers/keyboard.h"

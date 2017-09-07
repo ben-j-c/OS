@@ -12,6 +12,11 @@ char getc(Stream* s)
 	return ret;
 }
 
+int gets(Stream* s, char *buffer)
+{	
+	while(*buffer++ = getc(s));
+}
+
 void putc(Stream* s, char c)
 {
 	s->offset[s->idxAdd] = c;

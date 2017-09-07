@@ -31,8 +31,10 @@ extern void portOutB(unsigned short port, unsigned char data);
 extern unsigned char portInB(unsigned short port);
 extern void io_wait();
 
-void interruptInit();
-void PIC_sendEOI_MASTER();
-void PIC_sendEOI_SLAVE();
+void interruptInit(void);
+void NMI_enable(void);
+void NMI_disable(void);
+void PIC_sendEOI_MASTER(void);
+void PIC_sendEOI_SLAVE(void);
 
 #endif

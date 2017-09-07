@@ -9,18 +9,17 @@ mov ax, 0
 mov es, ax
 mov dx, ax
 
-call load_kernel ; Load our kernel
-
-mov bx, MSG_PROT_MODE_LOAD
+mov bx, TEST_STR
 call print_string
-call switch_to_pm ; Switch to protected mode , from which
+
+call load_kernel ; Load our kernel
+call switch_to_pm ; Switch to protected mode
 
 jmp $
 
 include "bootsector/print_string.ASM"
 include "bootsector/disk_load.asm"
 include "bootsector/gdt.asm"
-include "bootsector/print_string_pm.asm"
 include "bootsector/switch_to_pm.asm"
 
 
@@ -28,36 +27,19 @@ include "bootsector/switch_to_pm.asm"
 use16
 ; load_kernel
 load_kernel :
-	    mov bx , MSG_LOAD_KERNEL ; Print a message to say we are loading the kernel
-	    call print_string
-
 	    mov bx , KERNEL_OFFSET
 	    mov dh , 127 ;load 2^7 - 1 sectors
 	    mov cl, 0x02; starting from the 2nd sector
 	    mov dl , [ BOOT_DRIVE ]
 	    call disk_load
-
-	    ;mov bx , KERNEL_OFFSET + 48*512
-	    ;mov dh , 48 ;load 48 sectors
-	    ;mov cl, 0x49; starting from the 49th sector
-	    ;mov dl , [ BOOT_DRIVE ]
-	    ;call disk_load
-
-	    ;mov bx , KERNEL_OFFSET + 96*512
-	    ;mov dh , 32 ;load 32 sectors
-	    ;mov cl, 0x97; starting from the 97th sector
-	    ;mov dl , [ BOOT_DRIVE ]
-	    ;call disk_load
 ret
 
 use32
 
 BEGIN_PM :
-	 fldcw [FPU_CONTROL]
-	 call SSE_SUPPORT
-	 mov ebx , MSG_PROT_MODE ; Use our 32 - bit print routine to
-	 call print_string_pm ; announce we are in protected mode
-	 call KERNEL_OFFSET ; Now jump to the address of our loaded kernel
+	 ;fldcw [FPU_CONTROL]
+	 ;call SSE_SUPPORT
+	 call KERNEL_OFFSET ; Execute the kernel
 jmp $ ; Hang.
 
 ;Add support for SSE instructions
@@ -74,11 +56,9 @@ SSE_SUPPORT:
 ret
 
 ; Global variables
+TEST_STR: db "Hello? Its dark...", 0
+
 BOOT_DRIVE db 0
-MSG_REAL_MODE db "16 bit mode", 10, 13 , 0
-MSG_PROT_MODE_LOAD db "Loading 32- bit mode", 0
-MSG_PROT_MODE db "landed in 32 bit mode", 0
-MSG_LOAD_KERNEL db "Loading kernel", 10, 13 , 0
 
 FPU_CONTROL:
 	dw 0x007f
@@ -89,4 +69,4 @@ dw 0xaa55
 use32
 file "kernel.BIN"
 jp $
-times 512*128 - ($ - $$) db 0
+times 512*1024 - ($ - $$) db 0

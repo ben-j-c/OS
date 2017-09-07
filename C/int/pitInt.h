@@ -4,6 +4,7 @@
 #include "int/interruptInit.h"
 
 extern void print(const char*);
+extern void clearRange(int x, int y, int count);
 extern void printX64_XYA(unsigned long long, int x, int y, unsigned char atrib);
 
 extern void pitIntWr(void);

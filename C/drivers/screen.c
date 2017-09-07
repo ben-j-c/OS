@@ -6,6 +6,7 @@ static const char mapping[] = {'0','1','2','3','4','5','6','7','8','9','A','B','
 static struct 
 {
 	unsigned int displayCursor : 1;
+	unsigned int displayHexPrefix: 1;
 } options;
 static unsigned char lastAttrib = WHITE_ON_BLACK;
 
@@ -18,8 +19,8 @@ void printC(char c, int pos, char attrib)
 {
 	volatile unsigned char *vm = (volatile unsigned char*) VIDEO_MEMORY;
 	
-	vm[pos*2] = c;
-	vm[pos*2 + 1] = attrib;
+	vm[pos << 1] = c;
+	vm[(pos << 1) + 1] = attrib;
 }
 
 void printI32(int value)
@@ -54,12 +55,49 @@ void printI32(int value)
 	}
 }
 
+void printI32_XYA(int value, int x, int y, char atrib)
+{
+	int pos = getOffset(x,y);
+	
+	char sign = '+';
+	
+	if(value < 0)
+	{
+		value = -value;
+		sign = '-';
+	}
+	
+	char c[] = {'0','0','0','0','0','0','0','0','0','0'};
+	for(int i = 0 ; i < 11 ; i++)
+	{
+		c[i] = '0' + value%10;
+		value /= 10;
+	}
+	
+	int start = 11;
+	
+	while(c[--start] == '0'  && start > 0);
+	
+	if(sign == '-')
+	{
+		printC(sign, pos++, atrib);
+	}
+	
+	for(int i = start; i >= 0; i--)
+	{
+		printC(c[i], pos++, atrib);
+	}
+}
+
 void printX8(unsigned char value)
 {
 	int shift = 4;
 	
-	printChar('0');
-	printChar('x');
+	if(options.displayHexPrefix)
+	{
+		printChar('0');
+		printChar('x');
+	}
 	
 	while(shift != -4)
 	{
@@ -73,8 +111,11 @@ void printX16(unsigned short value)
 {
 	int shift = 12;
 	
-	printChar('0');
-	printChar('x');
+	if(options.displayHexPrefix)
+	{
+		printChar('0');
+		printChar('x');
+	}
 	
 	while(shift != -4)
 	{
@@ -89,8 +130,11 @@ void printX32(unsigned int value)
 	char mapping[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 	int shift = 28;
 	
-	printChar('0');
-	printChar('x');
+	if(options.displayHexPrefix)
+	{
+		printChar('0');
+		printChar('x');
+	}
 	
 	while(shift != -4)
 	{
@@ -104,8 +148,11 @@ void printX64(unsigned long long value)
 {
 	int shift = 60;
 	
-	printChar('0');
-	printChar('x');
+	if(options.displayHexPrefix)
+	{
+		printChar('0');
+		printChar('x');
+	}
 	
 	while(shift != -4)
 	{
@@ -117,46 +164,73 @@ void printX64(unsigned long long value)
 
 void printX8_XYA(unsigned char value, int x, int y, unsigned char atrib)
 {
-	int tempPos = cursorIdx;
-	unsigned char tempAtrib = lastAttrib;
+	int pos = y*COLS + x;
 	
-	cursorIdx = y*COLS + x;
-	lastAttrib = atrib;
-	if(cursorIdx >= 0 && cursorIdx < SCREEN_SIZE)
-		printX8(value);
-	
-	cursorIdx = tempPos;
-	lastAttrib = tempAtrib;
+	if(pos >= 0 && (pos + 10) < SCREEN_SIZE)
+	{
+		int shift = 4;
+		
+		if(options.displayHexPrefix)
+		{
+			printC('0',pos++,atrib);
+			printC('x',pos++,atrib);
+		}
+		
+		while(shift != -4)
+		{
+			char c = mapping[0x0f & (value >> shift)];
+			printC(c, pos++, atrib);
+			shift -= 4;
+		}
+	}
 	
 }
 
 void printX16_XYA(unsigned short value, int x, int y, unsigned char atrib)
 {
-	int tempPos = cursorIdx;
-	unsigned char tempAtrib = lastAttrib;
+	int pos = y*COLS + x;
 	
-	cursorIdx = y*COLS + x;
-	lastAttrib = atrib;
-	if(cursorIdx >= 0 && cursorIdx < SCREEN_SIZE)
-		printX16(value);
-	
-	cursorIdx = tempPos;
-	lastAttrib = tempAtrib;
+	if(pos >= 0 && (pos + 10) < SCREEN_SIZE)
+	{
+		int shift = 12;
+		
+		if(options.displayHexPrefix)
+		{
+			printC('0',pos++,atrib);
+			printC('x',pos++,atrib);
+		}
+		
+		while(shift != -4)
+		{
+			char c = mapping[0x0f & (value >> shift)];
+			printC(c, pos++, atrib);
+			shift -= 4;
+		}
+	}
 	
 }
 
 void printX32_XYA(unsigned int value, int x, int y, unsigned char atrib)
 {
-	int tempPos = cursorIdx;
-	unsigned char tempAtrib = lastAttrib;
+	int pos = y*COLS + x;
 	
-	cursorIdx = y*COLS + x;
-	lastAttrib = atrib;
-	if(cursorIdx >= 0 && cursorIdx < SCREEN_SIZE)
-		printX32(value);
-	
-	cursorIdx = tempPos;
-	lastAttrib = tempAtrib;
+	if(pos >= 0 && (pos + 10) < SCREEN_SIZE)
+	{
+		int shift = 28;
+		
+		if(options.displayHexPrefix)
+		{
+			printC('0',pos++,atrib);
+			printC('x',pos++,atrib);
+		}
+		
+		while(shift != -4)
+		{
+			char c = mapping[0x0f & (value >> shift)];
+			printC(c, pos++, atrib);
+			shift -= 4;
+		}
+	}
 	
 }
 
@@ -167,10 +241,13 @@ void printX64_XYA(unsigned long long value, int x, int y, unsigned char atrib)
 	if(pos >= 0 && (pos + 10) < SCREEN_SIZE)
 	{
 		int shift = 60;
-	
-		printC('0',pos++,atrib);
-		printC('x',pos++,atrib);
-	
+		
+		if(options.displayHexPrefix)
+		{
+			printC('0',pos++,atrib);
+			printC('x',pos++,atrib);
+		}
+		
 		while(shift != -4)
 		{
 			char c = mapping[0x0f & (value >> shift)];
@@ -340,6 +417,9 @@ void clc()
 	clear();
 }
 
+/**
+ * converts an xy to a linear offset from 
+ */
 int getOffset(int col, int row)
 {
 	if(col < 0 || row < 0 || col >= COLS || row >= ROWS)
@@ -393,12 +473,21 @@ void updateCursor()
 	}
 }
 
+void enableCursor()
+{
+	options.displayCursor = 1;
+}
+
 void disableCursor()
 {
 	options.displayCursor = 0;
 }
 
-void enableCursor()
+void enableHexPrefix()
 {
-	options.displayCursor = 1;
+	options.displayHexPrefix = 1;
+}
+void disableHexPrefix()
+{
+	options.displayHexPrefix = 0;
 }

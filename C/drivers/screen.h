@@ -11,6 +11,7 @@
 #include "util/stream.h"
 
 void printI32(int val);
+void printI32_XYA(int value, int x, int y, char atrib);
 
 void printX8(unsigned char hex);
 void printX16(unsigned short hex);
@@ -26,6 +27,7 @@ void printX64_XYA(unsigned long long hex, int x, int y, unsigned char atrib);
 
 void print(const char* string);
 void print_XYA(const char* string, int x, int y, char atrib);
+
 void printf(const char * format, ...);
 void printChar(char c);
 void sprintChar(Stream* s, char c);
@@ -42,6 +44,8 @@ void scrollScreen();
 void updateCursor();
 void disableCursor();
 void enableCursor();
+void enableHexPrefix();
+void disableHexPrefix();
 
 #define REG_SCREEN_CTRL 0x3D4
 #define REG_SCREEN_DATA 0x3D5

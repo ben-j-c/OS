@@ -46,6 +46,16 @@ void PIC_remap(int offset1, int offset2)
 	portOutB(PIC2_DATA, a2);
 }
 
+void NMI_enable(void)
+{
+	portOutB(0x70, portInB(0x70)&0x7F);
+}
+ 
+void NMI_disable(void)
+{
+	portOutB(0x70, portInB(0x70)|0x80);
+}
+
 void PIC_sendEOI_MASTER()
 {
 	portOutB(0x20,0x20);
@@ -92,8 +102,6 @@ void interruptInit()
 	idtTable[0x21].type_attr = 0x8E;
 	idtTable[0x21].selector = 0b0000000000001000;
 	
-	
-	
 	print("\n");
 	printX32(*(unsigned short*)(IDT));
 	print("\n");
@@ -110,6 +118,9 @@ void interruptInit()
 	PIC_sendEOI_SLAVE();
 	portOutB(0x21,0x00);
 	portOutB(0xa1,0x00);
+	
+	NMI_enable();
+	
 	
 	__asm__("sti");
 	

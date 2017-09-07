@@ -15,6 +15,7 @@ static Stream kbStream = { kbBuffer, 0x100, 0, 0};
 Stream* stdin;
 
 char getc(Stream* s);
+int gets(Stream* s, char* buffer);
 void putc(Stream* s, char c);
 char peekc(Stream* s);
 void resetStream(Stream* s);
