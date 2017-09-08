@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 print_string:
-
+pusha
 mov ah , 0x0e
 print_string_loop:
 mov al, [bx]
@@ -16,12 +16,13 @@ add al, 0
 jnz print_string_loop
 
 print_string_return:
+popa
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 print_hex:
-
+pusha
 mov ch, 0     ; counter
 mov cl, 12    ; shift count
 
@@ -50,6 +51,7 @@ print_hex_done:
 
 mov bx, DECODED_HEX_FINAL
 call print_string
+popa
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
