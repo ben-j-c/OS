@@ -3,7 +3,7 @@ use16
 loadSMAP:
 	pushad
 	mov ebx, 0x0000
-	mov eax, 0x500
+	mov eax, 0x504
 	mov di, ax
 	mov edx, 0x534d4150
 	loadSMAP_loop:
@@ -14,6 +14,12 @@ loadSMAP:
 		jc SMAPError
 		cmp cx, 20
 		jne SMAPError
+
+		push eax
+		mov eax, [0x500]
+		add eax, 1
+		mov [0x500], eax
+		pop eax
 
 		cmp ebx, 0
 		je loadSMAP_done

@@ -3,7 +3,7 @@ org 0x7c00
 KERNEL_OFFSET equ 0x7E00 ; This is the memory offset to which we will load our kernel
 mov [ BOOT_DRIVE ], dl ; BIOS stores our boot drive in DL , so it ’s
 ; best to remember this for later.
-mov bp, 0x7C00 - 0x0010 ; Set -up the stack.
+mov bp, 0x7C00; Set -up the stack.
 mov sp, bp
 
 mov ax, 0

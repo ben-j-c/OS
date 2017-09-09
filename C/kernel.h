@@ -1,5 +1,12 @@
 #ifndef _KERNEL_
 #define _KERNEL_
+#define NULL 0
+#define null 0
+#define true 1
+#define TRUE 1
+#define false 0
+#define FALSE 0
+
 
 #include "util/stream.h"
 #include "util/string.h"

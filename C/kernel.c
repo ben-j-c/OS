@@ -1,8 +1,5 @@
 #include "kernel.h"
 
-#define NULL 0
-#define null 0
-
 char cmd_array[64];
 Stream cmd;
 
@@ -10,6 +7,17 @@ void interruptInit();
 static void loop();
 void system(Stream *cmd);
 static void printTime();
+static void printMemoryMap();
+
+
+typedef struct
+{
+	unsigned long long baseAddress;
+	unsigned long long length;
+	unsigned int regionType;
+} MemoryRegion;
+
+static MemoryRegion *memory = (MemoryRegion*) 0x504;
 
 void init()
 {	
@@ -19,19 +27,19 @@ void init()
 	print("init: ");
 	printX32((unsigned int) init);
 	print("\n");
+	
+	print("System memory map: ");
+	printI32(*(unsigned int*) 0x500);
+	print("\n");
+	
 	interruptInit();
 	setCh0(0x0020);
 	print("Successfully loaded interrupt table\n");
 	print("12345    112345    212345    312345    412345    512345    612345    712345    8");
 	
 	setColour(0xf,0x4);
-	print("\n\nWaiting until 0x1000...\n");
+	print("The system has now booted...\n");
 	setColour(0xf,0x0);
-	
-	
-	
-	for(;((int)getSystemTime()) < 0x1000;);
-	clear();
 	
 	loop();
 }
@@ -74,6 +82,21 @@ void system(Stream* cmd)
 		print("HELLO!\n");
 	else if(!strcmp(buffer, "time"))
 		printTime();
+	else if(!strcmp(buffer, "memory"))
+		printMemoryMap();
+}
+
+static void printMemoryMap()
+{
+	for(int i = 0; i < *(unsigned int*) 0x500 ;i++)
+	{
+		printX64(memory[i].baseAddress);
+		printChar(' ');
+		printX64(memory[i].length);
+		printChar(' ');
+		printX32(memory[i].regionType);
+		printChar('\n');
+	}
 }
 
 static void printTime()
