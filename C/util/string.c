@@ -86,7 +86,7 @@ int strlen(char* p1)
 {
 	const unsigned char *s1 = (const unsigned char *) p1;
 	
-	while(*s1++);
+	while(*s1)s1++;
 	
 	return (int)s1 - (int)p1;
 }

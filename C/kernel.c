@@ -41,8 +41,6 @@ void init()
 	print("The system has now booted...\n");
 	setColour(0xf,0x0);
 	
-	printI32(firstOccurrence("hello", "012helloooooooooooo"));
-	
 	loop();
 }
 
