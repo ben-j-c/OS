@@ -41,6 +41,8 @@ void init()
 	print("The system has now booted...\n");
 	setColour(0xf,0x0);
 	
+	printI32(firstOccurrence("hello", "012helloooooooooooo"));
+	
 	loop();
 }
 
@@ -76,13 +78,13 @@ void system(Stream* cmd)
 	gets(cmd, buffer);
 	
 	
-	if(!strcmp(buffer, "clear"))
+	if(streq(toUpper(buffer), "CLEAR"))
 		clear();
-	else if(!strcmp(buffer, "hello"))
+	else if(streq(toUpper(buffer), "HELLO"))
 		print("HELLO!\n");
-	else if(!strcmp(buffer, "time"))
+	else if(streq(toUpper(buffer), "TIME"))
 		printTime();
-	else if(!strcmp(buffer, "memory"))
+	else if(streq(toUpper(buffer), "MEMORY"))
 		printMemoryMap();
 }
 
