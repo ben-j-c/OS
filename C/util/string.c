@@ -19,8 +19,9 @@ int streq(char* p1, char* p2)
 	
 	while(*s1 && *s1++ == *s2++);
 	
-	if(*s1 == *s2)
+	if(!(*s2 || *s1))
 		return 1;
+		
 	return 0;
 	
 }
@@ -38,6 +39,8 @@ char* toUpper(char* p1)
 		s1++;
 	}
 	
+	//print(p1);
+	//print("\n");
 	return p1;
 }
 
@@ -54,6 +57,8 @@ char* toLower(char* p1)
 		s1++;
 	}
 	
+	//print(p1);
+	//print("\n");
 	return p1;
 }
 

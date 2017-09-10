@@ -399,12 +399,26 @@ void clearRange(int x, int y, int count)
 
 void setColour(char foreColour, char backColour)
 {
-	lastAttrib = foreColour | backColour << 4;
+	lastAttrib = (foreColour & 0x0f) | (backColour & 0x0f) << 4;
 }
 
 void setAttrib(char value)
 {
 	lastAttrib = value;
+}
+
+unsigned char getAttrib()
+{
+	return lastAttrib;
+}
+
+unsigned char getFG()
+{
+	return lastAttrib & 0x0f;
+}
+unsigned char getBG()
+{
+	return (lastAttrib & 0xf0) >> 4;
 }
 
 void cls()

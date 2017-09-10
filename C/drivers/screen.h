@@ -32,7 +32,11 @@ void printf(const char * format, ...);
 void printChar(char c);
 void sprintChar(Stream* s, char c);
 void setColour(char foreColour, char backColour);
+
 void setAttrib(char value);
+unsigned char getAttrib();
+unsigned char getFG();
+unsigned char getBG();
 
 void clear();
 void cls();

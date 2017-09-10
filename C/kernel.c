@@ -74,16 +74,38 @@ void system(Stream* cmd)
 {
 	char buffer[64];
 	gets(cmd, buffer);
+	toUpper(buffer);
 	
-	
-	if(streq(toUpper(buffer), "CLEAR"))
+	if(streq(buffer, "CLEAR"))
+	{
 		clear();
-	else if(streq(toUpper(buffer), "HELLO"))
+	}
+	else if(streq(buffer, "HELLO"))
+	{
 		print("HELLO!\n");
-	else if(streq(toUpper(buffer), "TIME"))
+	}
+	else if(streq(buffer, "TIME"))
+	{
 		printTime();
-	else if(streq(toUpper(buffer), "MEMORY"))
+	}
+	else if(streq(buffer, "MEMORY"))
+	{
 		printMemoryMap();
+	}
+	else if(streq(buffer, "INC FG"))
+	{
+		setColour(getFG() + 1, getBG());
+	}
+	else if(streq(buffer, "INC BG"))
+	{
+		setColour(getFG(), getBG() + 1);
+	}
+	else if(streq(buffer, "GET SCREEN_ATRIB"))
+	{
+		printX8(getAttrib());
+		printChar('\n');
+	}
+		
 }
 
 static void printMemoryMap()
