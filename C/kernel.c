@@ -3,23 +3,9 @@
 char cmd_array[64];
 Stream cmd;
 
-void interruptInit();
-static void loop();
-void system(Stream *cmd);
-static void printTime();
-static void printMemoryMap();
-
-
-typedef struct
-{
-	unsigned long long baseAddress;
-	unsigned long long length;
-	unsigned int regionType;
-} MemoryRegion;
-
 static MemoryRegion *memory = (MemoryRegion*) 0x504;
 
-void init()
+static void init(void)
 {	
 	clear();
 	enableCursor();

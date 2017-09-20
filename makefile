@@ -13,7 +13,7 @@ OBJS_UTIL = 	$(addprefix C/util/obj/,$(notdir $(UTIL_FILES:.c=.o)))
 CC = gcc
 CFLAGS = -IC -ffreestanding -nostdlib -std=c99 -m32 -O0 -c
 LINKER = ld
-LFLAGS = -Ttext=0x7E00 -m i386pe
+LFLAGS = -T linkscript.ld -m i386pe
 OCOPY = objcopy
 OFLAGS = -O binary 
 
