@@ -1,9 +1,8 @@
 #include "kernel.h"
+#include "paging.c"
 
 char cmd_array[64];
 Stream cmd;
-
-static MemoryRegion *memory = (MemoryRegion*) 0x504;
 
 static void init(void)
 {	
@@ -23,6 +22,9 @@ static void init(void)
 	print("Successfully loaded interrupt table\n");
 	print("12345    112345    212345    312345    412345    512345    612345    712345    8");
 	
+	startPaging();
+	print("Successfully started paging\n");
+	
 	setColour(0xf,0x4);
 	print("The system has now booted...\n");
 	setColour(0xf,0x0);
@@ -30,7 +32,7 @@ static void init(void)
 	loop();
 }
 
-void loop()
+static void loop()
 {
 	cmd.idxAdd = 0;
 	cmd.idxRemove = 0;
@@ -96,13 +98,13 @@ void system(Stream* cmd)
 
 static void printMemoryMap()
 {
-	for(int i = 0; i < *(unsigned int*) 0x500 ;i++)
+	for(int i = 0; i < *memoryRegions ;i++)
 	{
-		printX64(memory[i].baseAddress);
+		printX64(memoryRegionDesc[i].baseAddress);
 		printChar(' ');
-		printX64(memory[i].length);
+		printX64(memoryRegionDesc[i].length);
 		printChar(' ');
-		printX32(memory[i].regionType);
+		printX32(memoryRegionDesc[i].regionType);
 		printChar('\n');
 	}
 }
@@ -110,7 +112,6 @@ static void printMemoryMap()
 static void printTime()
 {
 	Date d;
-	
 	getDate(&d);
 	
 	printX8(d.hours);

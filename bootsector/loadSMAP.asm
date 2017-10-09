@@ -5,7 +5,7 @@ loadSMAP:
 	mov ebx, 0x0000
 	mov eax, 0x504
 	mov di, ax
-	mov edx, 0x534d4150
+	mov edx, 0x534d4150 ;Dumb magic word needed to get the memory map
 	loadSMAP_loop:
 		mov eax, 0xE820
 		mov ecx, 20

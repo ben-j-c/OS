@@ -18,19 +18,22 @@
 #include "int/interruptInit.h"
 #include "int/keyboardInt.h"
 
+const typedef struct
+{
+	unsigned long long baseAddress;
+	unsigned long long length;
+	unsigned int regionType;
+} MemoryRegion;
+
+const unsigned int* memoryRegions = (unsigned int*) 0x500;
+const MemoryRegion* memoryRegionDesc = (MemoryRegion*) 0x504;
+
 void interruptInit(void);
 static void loop(void);
 void system(Stream *cmd);
 static void printTime(void);
 static void printMemoryMap(void);
 static void init(void) __attribute((section(".start")));
-
-
-typedef struct
-{
-	unsigned long long baseAddress;
-	unsigned long long length;
-	unsigned int regionType;
-} MemoryRegion;
+static void setupPaging();
 
 #endif
