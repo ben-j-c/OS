@@ -29,6 +29,24 @@ static void init(void)
 	print("The system has now booted...\n");
 	setColour(0xf,0x0);
 	
+	char inp[64] = "abcdef ghijk lmno pqrs";
+	char outp[64];
+	
+	print(inp);
+	print("\n");
+	
+	print(outp);
+	print("\n");
+	
+	print(outp);
+	print("\n");
+	extractStringSection(inp, ' ', 2, outp);
+	print(outp);
+	print("\n");
+	extractStringSection(inp, ' ', 3, outp);
+	print(outp);
+	print("\n");
+	
 	loop();
 }
 
@@ -61,8 +79,12 @@ static void loop()
 void system(Stream* cmd)
 {
 	char buffer[64];
-	gets(cmd, buffer);
-	toUpper(buffer);
+	char command[64];
+	gets(cmd, command);
+	toUpper(command);
+	
+	extractStringSection(command, ' ', 0, buffer);
+	
 	
 	if(streq(buffer, "CLEAR"))
 	{
@@ -80,17 +102,29 @@ void system(Stream* cmd)
 	{
 		printMemoryMap();
 	}
-	else if(streq(buffer, "INC FG"))
+	else if(streq(buffer, "INC"))
 	{
-		setColour(getFG() + 1, getBG());
+		if(extractStringSection(command, ' ', 1, buffer))
+			return;
+		
+		if(streq(buffer, "FG"))
+			setColour(getFG() + 1, getBG());
+		else if(streq(buffer, "BG"))
+			setColour(getFG(), getBG() + 1);
 	}
-	else if(streq(buffer, "INC BG"))
+	else if(streq(buffer, "GET"))
 	{
-		setColour(getFG(), getBG() + 1);
-	}
-	else if(streq(buffer, "GET SCREEN_ATRIB"))
-	{
-		printX8(getAttrib());
+		if(extractStringSection(command, ' ', 1, buffer))
+			return;
+		
+		if(streq(buffer, "SCREEN_ATRIB"))
+			printX8(getAttrib());
+		else if(streq(buffer, "ADDR"))
+		{
+			if(extractStringSection(command, ' ', 2, buffer))
+				return;
+			printX8(*(unsigned char*)atoi(buffer));
+		}
 		printChar('\n');
 	}
 		

@@ -95,3 +95,58 @@ int strlen(char* p1)
 	
 	return (int)s1 - (int)p1;
 }
+
+int extractStringSection(char* p1, char split, int index, char* p2)
+{
+	const unsigned char *s1 = (const unsigned char*) p1;
+	const unsigned char *s2 = (const unsigned char*) p2;
+	unsigned char c = (unsigned char) split;
+	
+	int count = 0;
+	
+	while(count != index && *s1++)
+	{
+		if(*(s1 - 1) == c)
+			count++;
+	}
+	
+	if(!*s1)
+		return -1;
+	
+	while(*s1 && *s1 != c)
+	{
+		*p2++ = *s1++;
+	}
+	*p2 = 0;
+	
+	return 0;
+}
+
+int atoi(unsigned char* number)
+{
+	int value = 0;
+	
+	if(*number == '0' && (*(number + 1) == 'x' || *(number + 1) == 'X'))
+	{
+		number = number + 2;
+		int counter = 0;
+		
+		while(*number)
+		{
+			unsigned char cur = *number;
+			if(cur >= '0' && cur <= '9')
+				value = (value << 4) + cur - '0';
+			else if(cur >= 'A' && cur <= 'F')
+				value = (value << 4) + cur - 'A' + 10;
+			else if(cur >= 'a' && cur <= 'a')
+				value = (value << 4) + cur - 'a' + 10;
+			
+			number++;
+		}
+	}
+	else
+	{
+	}
+	
+	return value;
+}
