@@ -8,7 +8,12 @@ char getc(Stream* s)
 	while(s->idxRemove == s->idxAdd);
 		
 	ret = s->offset[s->idxRemove];
-	s->idxRemove = (s->idxRemove + 1)%s->size;
+	
+	if(s->idxRemove + 1 == s->size)
+		s->idxRemove = 0;
+	else
+		s->idxRemove++; 
+	
 	return ret;
 }
 
@@ -20,7 +25,11 @@ int gets(Stream* s, char *buffer)
 void putc(Stream* s, char c)
 {
 	s->offset[s->idxAdd] = c;
-	s->idxAdd = (s->idxAdd + 1)%s->size;
+	
+	if(s->idxAdd + 1 == s->size)
+		s->idxAdd= 0;
+	else
+		s->idxAdd++; 
 }
 
 char peekc(Stream* s)

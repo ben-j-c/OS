@@ -12,9 +12,11 @@ volatile IDTDescr idtTable[256];
 volatile unsigned char IDT[6];
  
 /*
+ * This was taken from OSDev wiki
+ * 
+ * 
 arguments:
-	offset1 - vector offset for master PIC
-		vectors on the master become offset1..offset1+7
+	offset1 - vector offset for master PIC vectors on the master become offset1..offset1+7
 	offset2 - same for slave PIC: offset2..offset2+7
 */
 void PIC_remap(int offset1, int offset2)
@@ -80,8 +82,7 @@ void interruptInit()
 	IDT[3] = (0xff00 & (unsigned int) idtTable) >> 8;
 	IDT[2] = (0xff & (unsigned int) idtTable);
 	
-	
-	
+	//here is where we set the values in the interrupt table
 	idtTable[0x0].offset_1 = (0xffff & (unsigned int) divideByZeroIntWr);
 	idtTable[0x0].offset_2 = (0xffff0000 & (unsigned int) divideByZeroInt) >> 16;
 	idtTable[0x0].type_attr = 0x8E;
@@ -102,11 +103,11 @@ void interruptInit()
 	idtTable[0x21].type_attr = 0x8E;
 	idtTable[0x21].selector = 0b0000000000001000;
 	
-	print("\n");
+	print("\nIDT Length: ");
 	printX32(*(unsigned short*)(IDT));
-	print("\n");
-	printX32(*(int*)(IDT+ 2));
-	print("\n");
+	print("\nIDT start: ");
+	printX32(*(unsigned int*)(IDT+ 2));
+	print("\nidtTable: ");
 	printX32((unsigned int)idtTable);
 	print("\n");
 	

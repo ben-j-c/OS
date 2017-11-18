@@ -1,3 +1,7 @@
+/*
+ * This works by accessing CMOS registers through ports
+ */
+
 #include "time.h"
 
 int getSeconds()

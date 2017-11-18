@@ -15,7 +15,7 @@ loadSMAP:
 		cmp cx, 20
 		jne SMAPError
 
-		push eax
+		push eax ;Increment the count of descriptors
 		mov eax, [0x500]
 		add eax, 1
 		mov [0x500], eax

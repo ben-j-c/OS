@@ -1,8 +1,7 @@
 ; A boot sector that boots a C kernel in 32 - bit protected mode
 org 0x7c00
-KERNEL_OFFSET equ 0x7E00 ; This is the memory offset to which we will load our kernel
-mov [ BOOT_DRIVE ], dl ; BIOS stores our boot drive in DL , so it ’s
-; best to remember this for later.
+KERNEL_OFFSET equ 0x7E00;after the bootsector the kernel is loaded
+mov [ BOOT_DRIVE ], dl ; BIOS stores the boot drive in dl
 mov bp, 0x7C00; Set -up the stack.
 mov sp, bp
 
@@ -15,6 +14,13 @@ mov si, ax
 
 mov bx, TEST_STR
 call print_string
+
+
+mov ebx, [ 0x500 ]; at 0x500 is the length of the memory description
+imul ebx, 20; 20 bytes per descriptor
+add ebx, 0x504; point to the next 4 bytes
+mov al, [ BOOT_DRIVE ]
+mov [ ebx ], bl ;store the boot drive
 
 call loadSMAP
 call load_kernel ; Load our kernel
@@ -45,7 +51,7 @@ BEGIN_PM :
 	 ;fldcw [FPU_CONTROL]
 	 ;call SSE_SUPPORT
 	 call KERNEL_OFFSET ; Execute the kernel
-jmp $ ; Hang.
+jmp $ ; Hang (which will never happen)
 
 ; Global variables
 TEST_STR: db "Hello? Its dark...", 0

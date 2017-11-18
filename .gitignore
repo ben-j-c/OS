@@ -3,3 +3,4 @@ FASMW
 *.o
 *.tmp
 *.BIN
+*.lnk
