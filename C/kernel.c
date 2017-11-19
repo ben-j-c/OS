@@ -29,24 +29,6 @@ static void init(void)
 	print("The system has now booted...\n");
 	setColour(0xf,0x0);
 	
-	char inp[64] = "abcdef ghijk lmno pqrs";
-	char outp[64];
-	
-	print(inp);
-	print("\n");
-	
-	print(outp);
-	print("\n");
-	
-	print(outp);
-	print("\n");
-	extractStringSection(inp, ' ', 2, outp);
-	print(outp);
-	print("\n");
-	extractStringSection(inp, ' ', 3, outp);
-	print(outp);
-	print("\n");
-	
 	loop();
 }
 
@@ -127,13 +109,38 @@ void system(Stream* cmd)
 		}
 		printChar('\n');
 	}
+	else if(streq(buffer, "SET"))
+	{
+		if(extractStringSection(command, ' ', 1, buffer))
+			return;
+		
+		if(streq(buffer, "SCREEN_ATRIB"))
+		{
+			if(extractStringSection(command, ' ', 2, buffer))
+				return;
+				
+			setAttrib((char) atoi(buffer));
+		}
+		else if(streq(buffer, "ADDR"))
+		{
+			if(extractStringSection(command, ' ', 2, buffer))
+				return;
+			unsigned char* addr = (unsigned char*)atoi(buffer);
+			
+			if(extractStringSection(command, ' ', 3, buffer))
+				return;
+			*addr = (unsigned char) atoi(buffer);
+		}
+	}
 		
 }
 
 static void printMemoryMap()
 {
+	print("Memory map:\nBase Address,    Length,          Region Type\n");
 	for(int i = 0; i < *memoryRegions ;i++)
 	{
+		
 		printX64(memoryRegionDesc[i].baseAddress);
 		printChar(' ');
 		printX64(memoryRegionDesc[i].length);
