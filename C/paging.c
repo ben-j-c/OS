@@ -1,9 +1,50 @@
 #define PCD 0
 #define PWT 0
 
+typedef union
+{
+	unsigned int word;
+	struct PageDirectoryFields
+	{
+		unsigned char present : 1;
+		unsigned char writeEnable : 1;
+		unsigned char userPermission : 1;
+		unsigned char pageLevelWriteThrough : 1;
+		unsigned char pageLevelCacheDisable : 1;
+		unsigned char accessed : 1;
+		unsigned char ignored1 : 1;
+		unsigned char pageSize : 1;
+		unsigned char ignored2 : 4;
+		unsigned int  tableAddress : 20;
+	};
+
+}PageDirectory;
+
+typedef union
+{
+	unsigned int word;
+	struct PageTableFields
+	{
+		unsigned char present : 1;
+		unsigned char writeEnable : 1;
+		unsigned char userPermission : 1;
+		unsigned char pageLevelWriteThrough : 1;
+		unsigned char pageLevelCacheDisable : 1;
+		unsigned char accessed : 1;
+		unsigned char dirty : 1;
+		unsigned char pat : 1;
+		unsigned char global : 1;
+		unsigned char ignored2 : 3;
+		unsigned int  pageAddress : 20;
+	};
+	
+} PageTable;
+
 static void startPaging()
 {
-	unsigned int* pageDirectory = 0;
+	PageDirectory * pageDirectory = 0;
+	PageTable* tableAdr = 0;
+
 	int largestIdx = 0;
 	for(int i = 1;i < *memoryRegions;i++)
 	{
@@ -15,23 +56,27 @@ static void startPaging()
 	printI32(largestIdx);
 	print("\n");
 	
+
 	//Directory alignment
+	//if the largest region didnt land at a 4k aligned block, shift over to the next
 	if((memoryRegionDesc[largestIdx].baseAddress&0xFFF) == 0)
-		pageDirectory = (unsigned int*)  memoryRegionDesc[largestIdx].baseAddress;
+		pageDirectory = (PageDirectory*)  memoryRegionDesc[largestIdx].baseAddress;
 	else
-		pageDirectory = (unsigned int*) ((memoryRegionDesc[largestIdx].baseAddress&0xFFFFF000) + 0x1000);
-	
-	//Proprerties
-	pageDirectory = (unsigned int*) ((unsigned int) pageDirectory | (PCD << 4) | ( PWT << 3));
-	
+		pageDirectory = (PageDirectory*) ((memoryRegionDesc[largestIdx].baseAddress&0xFFFFF000) + 0x1000);
 	
 	//The page diretory will be a series of consecutive entries pointing to consecutive tables
 	for(int i = 0 ; i < 1024 ; i++)
 	{
-		unsigned int* tableAdr = pageDirectory + (i << 12) + 4096;
+		//The ith page table is after the page directory (pageDirectory + 4096) and after the i-1th
+		tableAdr = (PageTable*) ((unsigned int) pageDirectory + (i << 12) + 4096);
 		//Set the table address and properties
-		pageDirectory[i] =  (unsigned int) tableAdr | 0b0000011;
-		/* 
+		//pageDirectory[i].word =  (unsigned int) tableAdr | 0b0000011;
+		
+		
+		pageDirectory[i].present = 1;
+		pageDirectory[i].writeEnable = 1;
+		pageDirectory[i].tableAddress = (unsigned int)tableAdr >> 12;
+		/*
 		 * Properties (intel x86 dev manual table 4-5) from LSB to MSB:
 		 * Present
 		 * R/W access
@@ -45,7 +90,12 @@ static void startPaging()
 		for(int j = 0 ; j < 1024 ; j++)
 		{
 			//Map the linear address space to the physical address space: Linear_Address = Physical_Address
-			tableAdr[j] = (j << 12) | (i << 22) |  0b100000011;
+			//tableAdr[j].word = (j << 12) | (i << 22) |  0b100000011;
+			
+			tableAdr[j].present = 1;
+			tableAdr[j].writeEnable = 1;
+			tableAdr[j].global = 1;
+			tableAdr[j].pageAddress = j | (i << 10);
 			/*
 			 * Physical address:
 			 * [31:22] = i (10-bit)
@@ -65,8 +115,10 @@ static void startPaging()
 		}
 	}
 	
-
+	//Proprerties
+	pageDirectory = (PageDirectory*)((unsigned int)pageDirectory | (PCD << 4) | (PWT << 3));
 	
+
 	__asm__(
 	".intel_syntax;"
 	"mov cr3, %0;"

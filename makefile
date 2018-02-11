@@ -10,7 +10,7 @@ OBJS_INT = 		$(addprefix C/int/obj/,$(notdir $(INT_FILES:.c=.o)))
 OBJS_UTIL = 	$(addprefix C/util/obj/,$(notdir $(UTIL_FILES:.c=.o)))
 
 CC = gcc
-CFLAGS = -IC -ffreestanding -nostdlib -std=c99 -m32 -O0 -c
+CFLAGS = -IC -ffreestanding -nostdlib -std=c99 -m32 -O0 -c -ggdb -mno-ms-bitfields
 LINKER = ld
 LFLAGS = -T linkscript.ld -m i386pe
 OCOPY = objcopy
