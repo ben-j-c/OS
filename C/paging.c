@@ -72,21 +72,9 @@ static void startPaging()
 		//Set the table address and properties
 		//pageDirectory[i].word =  (unsigned int) tableAdr | 0b0000011;
 		
-		
 		pageDirectory[i].present = 1;
 		pageDirectory[i].writeEnable = 1;
 		pageDirectory[i].tableAddress = (unsigned int)tableAdr >> 12;
-		/*
-		 * Properties (intel x86 dev manual table 4-5) from LSB to MSB:
-		 * Present
-		 * R/W access
-		 * Supervisor only
-		 * No PWT
-		 * PCD not disabled
-		 * Not accessed
-		 * Ignored bit
-		 * Not 4MB page
-		 */
 		for(int j = 0 ; j < 1024 ; j++)
 		{
 			//Map the linear address space to the physical address space: Linear_Address = Physical_Address
@@ -96,22 +84,6 @@ static void startPaging()
 			tableAdr[j].writeEnable = 1;
 			tableAdr[j].global = 1;
 			tableAdr[j].pageAddress = j | (i << 10);
-			/*
-			 * Physical address:
-			 * [31:22] = i (10-bit)
-			 * [21:12] = j (10-bit)
-			 * 
-			 * Properties (intel x86 dev manual table 4-6):
-			 * Present
-			 * R/W access
-			 * Supervisor only
-			 * No PWT
-			 * PCD not disabled
-			 * Not accessed
-			 * Not dirty
-			 * PAT disabled
-			 * This is a global translation
-			 */
 		}
 	}
 	

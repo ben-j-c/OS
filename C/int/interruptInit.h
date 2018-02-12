@@ -19,11 +19,20 @@
 #define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
 
+/*
+To add a new interrupt:
+Create new wrapper asm
+Create new C function
+Include its .h file in here
+in interruptInit() put its settings in the IDT
+*/
+
 #include "keyboardInt.h"
 #include "doubleFaultInt.h"
 #include "tripleFaultInt.h"
 #include "divideByZeroInt.h"
 #include "pitInt.h"
+#include "pageFaultInt.h"
 
 extern void printX32(unsigned int);
 extern void print(const char*);

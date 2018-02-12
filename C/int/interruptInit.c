@@ -6,7 +6,7 @@ typedef struct {
    unsigned char zero;      // unused, set to 0
    unsigned char type_attr; // type and attributes, see below
    unsigned short offset_2; // offset bits 16..31
-} __attribute__((packed)) IDTDescr;
+}  IDTDescr __attribute__((packed));
 
 volatile IDTDescr idtTable[256];
 volatile unsigned char IDT[6];
@@ -92,6 +92,11 @@ void interruptInit()
 	idtTable[0x8].offset_2 = (0xffff0000 & (unsigned int) doubleFaultInt) >> 16;
 	idtTable[0x8].type_attr = 0x8E;
 	idtTable[0x8].selector = 0b0000000000001000;
+
+	idtTable[0xE].offset_1 = (0xffff & (unsigned int)pageFaultIntWr);
+	idtTable[0xE].offset_2 = (0xffff0000 & (unsigned int)pageFaultIntWr) >> 16;
+	idtTable[0xE].type_attr = 0x8E;
+	idtTable[0xE].selector = 0b0000000000001000;
 	
 	idtTable[0x20].offset_1 = (0xffff & (unsigned int) pitIntWr);
 	idtTable[0x20].offset_2 = (0xffff0000 & (unsigned int) pitIntWr) >> 16;
